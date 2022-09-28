@@ -2956,8 +2956,22 @@ BaseType_t xTaskIncrementTick( void )
 
                     /* Place the unblocked task into the appropriate ready
                      * list. */
-// kant metshala w3mla moshkla E.C  
-										prvAddTaskToReadyList( pxTCB );
+										
+// kant metshala w3mla moshkla E.C KAOUD TAG FWD 
+										
+ // fwd_proj2_spec2
+										
+										/* if using EDF scheduler should here : 
+										update the new coming deadline (current_tick + task_period) first then add it to the readylistEDF according to this time, 
+										the task deadline that used to place it in right position 
+										by the help of the macro prvAddTaskToReadyList 
+										is placed int the task TCB parameter "  xStateListItem " 
+										so sould be updated first, wlba2y 3la el macro prvAddTaskToReadyList hy7oto fl right postion isa,
+										nafs ele bn3mlo m3 ay task bt get created awl mara using xTaskPeriodicCreate*/
+										
+										/*Update the task Deadline before adding to xReadyTaskListEDF*/
+										listSET_LIST_ITEM_VALUE( &( ( pxTCB )->xStateListItem ), ((pxTCB)->xTaskPeriod + xTaskGetTickCount()) );
+ 										prvAddTaskToReadyList( pxTCB );
 
                     /* A task being unblocked cannot cause an immediate
                      * context switch if preemption is turned off. */
@@ -2966,8 +2980,17 @@ BaseType_t xTaskIncrementTick( void )
                             /* Preemption is on, but a context switch should
                              * only be performed if the unblocked task has a
                              * priority that is equal to or higher than the
-                             * currently executing task. */
-                            if( pxTCB->uxPriority >= pxCurrentTCB->uxPriority )
+                             * currently execfuting task. */
+													
+									// fwd_proj2_spec3
+															/*replace the comparision of the new added task to EDFreadylist with the current running task,
+																to compare using the task deadline not ptiotity,
+																task deadline is stored in xStateListItem parameterof TaskControlBlock
+																and can use listGET_LIST_ITEM_VALUE() macro to return the value stored in it*/
+													
+                            //if( pxTCB->uxPriority >= pxCurrentTCB->uxPriority )
+                            if( (listGET_LIST_ITEM_VALUE(&((pxTCB)->xStateListItem))) < ((listGET_LIST_ITEM_VALUE(&((pxCurrentTCB)->xStateListItem)))))
+														// or if( ((&((pxTCB)->xStateListItem))->xItemValue) < (((&((pxCurrentTCB)->xStateListItem))->xItemValue)) )
                             {
                                 xSwitchRequired = pdTRUE;
                             }
@@ -3598,7 +3621,22 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
     portALLOCATE_SECURE_CONTEXT( configMINIMAL_SECURE_STACK_SIZE );
 
     for( ; ; )
-    {
+    {      
+// fwd_proj2_spec1
+				/*increment idle deadline , make it generic always equal to currenttick+100, 
+			idle task will be executed only if it is the only one in the EDFReadyList or when its the nearestdeadline, 
+			even when it get servedd its deadline always will be updated to be far from the current tick with 100 ticks 
+			so any task inserted to the EDFReadylist will be inserted above it 
+			and get executed in the next scheduling point  
+			summary : if it get executed and another task in the list it will be getout at the next tick because 
+			@ the next tick the idletask deadline will be far with 100*/
+			
+			// elmfrod more safe yt3ml elkalm da 3nd xTaskIncrementTick amsh hna 3shan mysm7lhash t5osh aslun lw fe tasks tanya
+			
+			listSET_LIST_ITEM_VALUE( &( ( pxCurrentTCB )->xStateListItem ), (( pxCurrentTCB )->xTaskPeriod + xTaskGetTickCount()) );
+
+			//ana shayf en el deadline bta3ha yget far f kol tick a7san fmt5oshsh aslun ela lw mfesh gherha, kda fe case tanya ht5osh feha whta5od 1 tick serving 3la el next evaluation
+			
         /* See if any tasks have deleted themselves - if so then the idle task
          * is responsible for freeing the deleted task's TCB and stack. */
         prvCheckTasksWaitingTermination();
@@ -3624,8 +3662,13 @@ static portTASK_FUNCTION( prvIdleTask, pvParameters )
                  * the list, and an occasional incorrect value will not matter.  If
                  * the ready list at the idle priority contains more than one task
                  * then a task other than the idle task is ready to execute. */
-                if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ tskIDLE_PRIORITY ] ) ) > ( UBaseType_t ) 1 )
-                {
+ // fwd_proj2_spec3     
+								/*Must change the use here to xReadyTasksListEDF instead of the pxReadyTasksLists*/
+									
+							//if( listCURRENT_LIST_LENGTH( &( pxReadyTasksLists[ tskIDLE_PRIORITY ] ) ) > ( UBaseType_t ) 1 )
+                if( listCURRENT_LIST_LENGTH( &( xReadyTasksListEDF ) ) > ( UBaseType_t ) 1 )
+               
+								{
                     taskYIELD();
                 }
                 else

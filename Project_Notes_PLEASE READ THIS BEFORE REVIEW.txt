@@ -1,0 +1,6 @@
+===== Regarding Rubric Spec2 ======
+The following Tags are implemented in comments before each requirment :
+1.TAG : // fwd_proj2_spec1 
+2.TAG : // fwd_proj2_spec2 
+3.TAG : // fwd_proj2_spec3
+

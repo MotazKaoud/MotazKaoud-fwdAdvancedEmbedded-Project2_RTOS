@@ -43,10 +43,10 @@
  *----------------------------------------------------------*/
 /*************** EDF Scheduler Modfications********************/
 /* E.C */
-#define configUSE_EDF_SCHEDULER 1
+#define configUSE_EDF_SCHEDULER 0
 
 #define configUSE_PREEMPTION		1
-#define configUSE_IDLE_HOOK			1
+#define configUSE_IDLE_HOOK			0
 #define configUSE_TICK_HOOK			1
 #define configCPU_CLOCK_HZ			( ( unsigned long ) 60000000 )	/* =12.0MHz xtal multiplied by 5 using the PLL. */
 #define configTICK_RATE_HZ			( ( TickType_t ) 1000 ) // 1000HZ tick rate, 1ms periodic time
@@ -55,8 +55,10 @@
 #define configTOTAL_HEAP_SIZE		( ( size_t ) 13 * 1024 )
 #define configMAX_TASK_NAME_LEN		( 8 )
 #define configUSE_TRACE_FACILITY	0
-#define configUSE_16_BIT_TICKS		0
+#define configUSE_16_BIT_TICKS		1
 #define configIDLE_SHOULD_YIELD		1
+
+//#define configSUPPORT_DYNAMIC_ALLOCATION 1 
 
 #define configQUEUE_REGISTRY_SIZE 	0
 

@@ -1,5 +1,5 @@
 # MotazKaoud-fwdAdvancedEmbedded-Project2_RTOS
-Project#2 for RTOS Module, Creating EDF Scheduler.
+implementation of EDF scheduler based on FreeRTOS and testing OS Performance.
 
 <html>
 <head>
